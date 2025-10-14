@@ -85,15 +85,6 @@ const Home = async () => {
           ))}
         </div>
       </div>
-      <footer>
-        <Card>
-          <CardContent className="flex items-center justify-center p-5">
-            <p className="text-center text-sm text-gray-400">
-              © 2025 Copyright, Willian Daniel Silva
-            </p>
-          </CardContent>
-        </Card>
-      </footer>
     </div>
   );
 };
