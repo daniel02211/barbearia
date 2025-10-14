@@ -1,8 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["utfs.io"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "utfs.io",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.utfs.io", // cobre subdomínios tipo f.utfs.io
+        port: "",
+        pathname: "/**",
+      },
+    ],
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
