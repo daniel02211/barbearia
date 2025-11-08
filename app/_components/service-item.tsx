@@ -1,7 +1,14 @@
-import { BarbershopService } from "@prisma/client";
 import { Button } from "./ui/button";
 import Image from "next/image";
 import { Card, CardContent } from "./ui/card";
+
+type BarbershopService = {
+  id?: string;
+  name: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  price: string | number;
+};
 
 interface ServiceItemProps {
   service: BarbershopService;
@@ -11,13 +18,17 @@ const ServiceItem = ({ service }: ServiceItemProps) => {
   return (
     <Card>
       <CardContent className="flex items-center gap-3 p-3">
-        <div className=", relative max-h-[110px] min-h-[110px] min-w-[110px] max-w-[110px]">
-          <Image
-            alt={service.name}
-            src={service.imageUrl}
-            fill
-            className="rounded-lg object-cover"
-          />
+        <div className="relative max-h-[110px] min-h-[110px] min-w-[110px] max-w-[110px]">
+          {service.imageUrl ? (
+            <Image
+              alt={service.name}
+              src={service.imageUrl}
+              fill
+              className="rounded-lg object-cover"
+            />
+          ) : (
+            <div className="h-full w-full rounded-lg bg-gray-200" />
+          )}
         </div>
         <div className="space-y-2">
           <h3 className="font-semibold">{service.name}</h3>

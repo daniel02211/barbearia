@@ -1,73 +1,103 @@
-import { SearchIcon } from "lucide-react";
-import { Badge } from "./_components/ui/badge";
 import Header from "./_components/header";
 import { Button } from "./_components/ui/button";
-import { Input } from "./_components/ui/input";
 import Image from "next/image";
-import { Card, CardContent } from "./_components/ui/card";
-import { Avatar } from "./_components/ui/avatar";
-import { AvatarImage } from "@radix-ui/react-avatar";
 import { db } from "./_lib/prisma";
 import BarbershopItem from "./_components/barbershop-item";
+import { quickSearchOptions } from "./_constants/search";
+import BookingItem from "./_components/booking-item";
+import Search from "./_components/search";
+import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./_lib/auth";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { getConfirmedBookings } from "./_data/get-confirmed-bookings";
 
 const Home = async () => {
+  const session = await getServerSession(authOptions);
   const barbershops = await db.barbershop.findMany({});
   const popularBarbershops = await db.barbershop.findMany({
     orderBy: {
       name: "desc",
     },
   });
+  const confirmedBookings = await getConfirmedBookings();
 
   return (
     <div>
+      {/* header */}
       <Header />
       <div className="p-5">
-        <h2 className="text-xl font-bold">Olá, Willian!</h2>
-        <p>Domingo, 14 de setembro.</p>
-        <div className="mt-6 flex items-center gap-2">
-          <Input placeholder="Faça sua busca..." />
-          <Button>
-            <SearchIcon />
-          </Button>
+        {/* TEXTO */}
+        <h2 className="text-xl font-bold">
+          Olá, {session?.user ? session.user.name : "bem vindo"}!
+        </h2>
+        <p>
+          <span className="capitalize">
+            {format(new Date(), "EEEE, dd", { locale: ptBR })}
+          </span>
+          <span>&nbsp;de&nbsp;</span>
+          <span className="capitalize">
+            {format(new Date(), "MMMM", { locale: ptBR })}
+          </span>
+        </p>
+
+        {/* BUSCA */}
+        <div className="mt-6">
+          <Search />
         </div>
 
+        {/* BUSCA RÁPIDA */}
+        <div className="mt-6 flex gap-3 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
+          {quickSearchOptions.map((option) => (
+            <Button
+              className="gap-2"
+              variant="secondary"
+              key={option.title}
+              asChild
+            >
+              <Link href={`/barbershops?service=${option.title}`}>
+                <Image
+                  src={option.imageUrl}
+                  width={16}
+                  height={16}
+                  alt={option.title}
+                />
+                {option.title}
+              </Link>
+            </Button>
+          ))}
+        </div>
+
+        {/* IMAGEM */}
         <div className="relative mt-6 h-[150px] w-full">
           <Image
-            alt="Agende nos melgores com FWS Barber"
+            alt="Agende nos melhores com FSW Barber"
             src="/banner-01.png"
             fill
             className="rounded-xl object-cover"
           />
         </div>
 
-        <h2 className="mb-3 mt-4 text-xs font-bold uppercase text-gray-400">
-          Agendamentos
-        </h2>
+        {confirmedBookings.length > 0 && (
+          <>
+            <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
+              Agendamentos
+            </h2>
 
-        <Card>
-          <CardContent className="flex justify-between p-0 px-5 py-5">
-            {/* Lado esquerdo */}
-            <div className="flex flex-col gap-2">
-              <Badge className="w-fit">Confirmar</Badge>
-              <h3 className="font-semibold">Corte de cabelo</h3>
-              <div className="flex items-center gap-2">
-                <Avatar className="h-6 w-6">
-                  <AvatarImage src="https://utfs.io/f/5832df58-cfd7-4b3f-b102-42b7e150ced2-16r.png" />
-                </Avatar>
-                <p className="text-sm">Barbearia FWS</p>
-              </div>
+            {/* AGENDAMENTO */}
+            <div className="flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+              {confirmedBookings.map((booking) => (
+                <BookingItem
+                  key={booking.id}
+                  booking={JSON.parse(JSON.stringify(booking))}
+                />
+              ))}
             </div>
+          </>
+        )}
 
-            {/* Lado direito */}
-            <div className="flex flex-col items-center justify-center border-l-2 border-solid px-5">
-              <p className="text-sm">setembro</p>
-              <p className="text-2xl">05</p>
-              <p className="text-sm">20:00</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <h2 className="mb-3 mt-4 text-xs font-bold uppercase text-gray-400">
+        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
           Recomendados
         </h2>
         <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
@@ -76,7 +106,7 @@ const Home = async () => {
           ))}
         </div>
 
-        <h2 className="mb-3 mt-4 text-xs font-bold uppercase text-gray-400">
+        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
           Populares
         </h2>
         <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">

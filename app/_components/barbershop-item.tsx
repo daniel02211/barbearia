@@ -1,5 +1,11 @@
-import { Barbershop } from "@prisma/client";
 import { Card, CardContent } from "./ui/card";
+
+interface Barbershop {
+  id: string;
+  name: string;
+  imageUrl: string;
+  address: string;
+}
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
