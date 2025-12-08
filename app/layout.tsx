@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import Footer from "./_components/footer";
-import NextAuthProvider from "./_providers/auth";
+import AuthProvider from "./_providers/auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,13 +20,13 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={inter.className}>
-        <NextAuthProvider>
+        <AuthProvider>
           <div className="flex h-full flex-col">
             <div className="flex-1">{children}</div>
             <Footer />
           </div>
-          <Toaster />
-        </NextAuthProvider>
+        </AuthProvider>
+        <Toaster />
       </body>
     </html>
   );
